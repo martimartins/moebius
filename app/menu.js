@@ -298,9 +298,9 @@ function colors_menu_template(win) {
             {label: "Default Color", id: "default_color", accelerator: "CmdorCtrl+D", click(item) {win.send("default_color");}},
             {label: "Switch Foreground / Background", id: "switch_foreground_background", accelerator: "Shift+CmdorCtrl+X", click(item) {win.send("switch_foreground_background");}},
             {type: "separator"},
-            {label: "Select Pallette", submenu: [
-                {label: "Default", id: "default_pallet", click(item) {win.send("toggle_default_pallet", "default");}, type: "checkbox", checked: false},
-                {label: "ZX Spectrum", id: "zx_spectrum_pallet", click(item) {win.send("set_color_palette", "zx");}, type: "checkbox", checked: false},
+            {label: "Select Palette", submenu: [
+                {label: "Default", id: "default_palette", click(item) {win.send("toggle_default_palette");}, type: "checkbox", checked: false},
+                {label: "ZX Spectrum", id: "zx_spectrum_palette", click(item) {win.send("toggle_zx_spectrum_palette");}, type: "checkbox", checked: false},
             ]},
             {type: "separator"},
             {label: "Use iCE Colors", id: "ice_colors", accelerator: "CmdorCtrl+E", click(item) {win.send("ice_colors", item.checked);}, type: "checkbox", checked: false},
@@ -618,6 +618,13 @@ electron.ipcMain.on("uncheck_drawinggrid_custom", (event, {id}) => uncheck(id, "
 electron.ipcMain.on("check_underneath", (event, {id}) => check(id, "underneath"));
 electron.ipcMain.on("uncheck_over", (event, {id}) => uncheck(id, "over"));
 electron.ipcMain.on("check_over", (event, {id}) => check(id, "over"));
+
+electron.ipcMain.on("check_default_palette", (event, {id}) => check(id, "default_palette"));
+electron.ipcMain.on("check_zx_spectrum_palette", (event, {id}) => check(id, "zx_spectrum_palette"));
+electron.ipcMain.on("uncheck_all_palettes", (event, {id}) => {
+    uncheck(id, "default_palette");
+    uncheck(id, "zx_spectrum_palette");
+});
 
 electron.ipcMain.on("check_smallscale_guide", (event, {id}) => check(id, "smallscale_guide"));
 electron.ipcMain.on("check_square_guide", (event, {id}) => check(id, "square_guide"));

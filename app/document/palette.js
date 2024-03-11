@@ -1,8 +1,8 @@
 const doc = require("./doc");
 const libtextmode = require("../libtextmode/libtextmode");
-const pallet = require("../libtextmode/palette");
+const palette = require("../libtextmode/palette");
 const keyboard = require("./input/keyboard");
-const {on, send_sync} = require("../senders");
+const {on, send_sync, send} = require("../senders");
 const events = require("events");
 
 class PaletteChooser extends events.EventEmitter {
@@ -69,6 +69,7 @@ class PaletteChooser extends events.EventEmitter {
             doc.c64_background = this.bg_value;
         }
         this.update_swatches();
+        send("check_default_palette");
     }
 
     previous_foreground_color() {
@@ -96,11 +97,36 @@ class PaletteChooser extends events.EventEmitter {
     }
 
     set_color_palette(name) {
-        const p = pallet.palettes[name];
-        for (let i = 0; i < p.length; i++) {
-            doc.update_palette(i, p[i])
+        if (name === "zx") doc.palette = palette.zx;
+        else if (name == "default") doc.palette = palette.ega.map(e => palette.convert_ega_to_vga(e));
+        else return;
+
+        for (let i = 0; i < doc.palette.length; i++) {
+            doc.update_palette(i, doc.palette[i]);
         }
         this.update_swatches();
+    }
+
+    toggle_default_palette() {
+        send("uncheck_all_palettes");
+        this.set_color_palette("default");
+        send("check_default_palette");
+    }
+
+    toggle_zx_spectrum_palette() {
+        send("uncheck_all_palettes");
+        this.set_color_palette("zx");
+        send("check_zx_spectrum_palette");
+
+        // Rerender ZX Spectrum colors
+        // For ZX Spectrum Restriction 
+        for (let y = 0; y <= doc.rows - 1; y++) {
+            for (let x = 0; x <= doc.columns - 1; x++) {
+                const prev_block = doc.data[doc.columns * y + (x - 1)];
+                const block = doc.data[doc.columns * y + x];
+                if ((x-1) % 2 == 0) doc.visual_change_at(1-x, y, prev_block.code, block.fg, block.bg);
+            }
+        }
     }
 
     switch_foreground_background() {
@@ -147,7 +173,8 @@ class PaletteChooser extends events.EventEmitter {
         on("previous_background_color", (event) => this.previous_background_color());
         on("next_background_color", (event) => this.next_background_color());
         on("default_color", (event) => this.default_color());
-        on("set_color_palette", (event, name) => this.set_color_palette(name));
+        on("toggle_default_palette", (event) => this.toggle_default_palette());
+        on("toggle_zx_spectrum_palette", (event) => this.toggle_zx_spectrum_palette());
         on("switch_foreground_background", (event) => this.switch_foreground_background());
         on("set_fg", (event, new_fg) => this.fg = new_fg);
         on("set_bg", (event, new_bg) => {

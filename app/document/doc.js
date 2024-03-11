@@ -778,6 +778,11 @@ class TextModeDoc extends events.EventEmitter {
         return libtextmode.get_blocks(doc, sx, sy, dx, dy, opts);
     }
 
+    visual_change_at(x, y, code, fg, bg) {
+        const block = {code, fg, bg}
+        libtextmode.render_at(render, x, y, block, doc.c64_background);
+    }
+
     change_data(x, y, code, fg, bg, prev_cursor, cursor, mirrored = true) {
         if (x < 0 || x >= doc.columns || y < 0 || y >= doc.rows) return;
         const i = doc.columns * y + x;

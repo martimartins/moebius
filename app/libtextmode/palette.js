@@ -34,21 +34,21 @@ const c64_light_green = rgb(42, 63, 39);
 const c64_light_blue = rgb(26, 27, 58);
 const c64_light_grey = rgb(44, 44, 44);
 
-const zx_black = rgb(0, 0, 0)
-const zx_dark_blue = rgb(0, 0, 216)
-const zx_blue = rgb(0, 0, 255)
-const zx_dark_red = rgb(216, 0, 0)
-const zx_red = rgb(255, 0, 0)
-const zx_purple = rgb(216, 0, 216)
-const zx_magenta = rgb(255, 0, 255)
-const zx_dark_green = rgb(0, 216, 0)
-const zx_green = rgb(0, 255, 0)
-const zx_dark_cyan = rgb(0, 216, 216)
-const zx_cyan = rgb(0, 255, 255)
-const zx_dark_yellow = rgb(216, 216, 0)
-const zx_yellow = rgb(255, 255, 0)
-const zx_beige = rgb(216, 216, 216)
-const zx_white = rgb(255, 255, 255)
+const zx_black = rgb(0, 0, 0);
+const zx_dark_blue = rgb(0, 0, 216);
+const zx_blue = rgb(0, 0, 255);
+const zx_dark_red = rgb(216, 0, 0);
+const zx_red = rgb(255, 0, 0);
+const zx_purple = rgb(216, 0, 216);
+const zx_magenta = rgb(255, 0, 255);
+const zx_dark_green = rgb(0, 216, 0);
+const zx_green = rgb(0, 255, 0);
+const zx_dark_cyan = rgb(0, 216, 216);
+const zx_cyan = rgb(0, 255, 255);
+const zx_dark_yellow = rgb(216, 216, 0);
+const zx_yellow = rgb(255, 255, 0);
+const zx_beige = rgb(216, 216, 216);
+const zx_white = rgb(255, 255, 255);
 
 const ega = [black, blue, green, cyan, red, magenta, yellow, white, bright_black, bright_blue, bright_green, bright_cyan, bright_red, bright_magenta, bright_yellow, bright_white];
 const c64 = [c64_black, c64_white, c64_red, c64_cyan, c64_violet, c64_green, c64_blue, c64_yellow, c64_orange, c64_brown, c64_light_red, c64_dark_grey, c64_grey, c64_light_green, c64_light_blue, c64_light_grey];
@@ -64,7 +64,8 @@ function get_rgba(rgb) {
 }
 
 function convert_6bits_to_8bits(value) {
-    return (value << 2) | ((value & 0x30) >> 4);
+    const u8 = (value << 2) | ((value & 0x30) >> 4);
+    return u8 > 255 ? value: u8
 }
 
 function convert_ega_to_vga(rgb) {
@@ -97,4 +98,11 @@ function has_c64_palette(palette) {
     return true;
 }
 
-module.exports = {white, bright_white, ega, c64, zx, palettes, get_rgba, convert_ega_to_vga, convert_ega_to_style, has_ansi_palette, has_c64_palette};
+function has_zx_spectrum_palette(palette) {
+    for (let i = 0; i < palette.length; i++) {
+        if (palette[i].r != zx[i].r || palette[i].g != zx[i].g || palette[i].b != zx[i].b) return false;
+    }
+    return true;
+}
+
+module.exports = {white, bright_white, ega, c64, zx, palettes, get_rgba, convert_ega_to_vga, convert_ega_to_style, has_zx_spectrum_palette, has_ansi_palette, has_c64_palette};
