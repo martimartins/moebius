@@ -54,11 +54,6 @@ const ega = [black, blue, green, cyan, red, magenta, yellow, white, bright_black
 const c64 = [c64_black, c64_white, c64_red, c64_cyan, c64_violet, c64_green, c64_blue, c64_yellow, c64_orange, c64_brown, c64_light_red, c64_dark_grey, c64_grey, c64_light_green, c64_light_blue, c64_light_grey];
 const zx = [zx_black, zx_dark_blue, zx_blue, zx_dark_red, zx_red, zx_purple, zx_magenta, zx_dark_green, zx_green, zx_dark_cyan, zx_cyan, zx_dark_yellow, zx_yellow, zx_beige, zx_white, zx_white];
 
-const palettes = {
-    zx,
-    default: ega
-}
-
 function get_rgba(rgb) {
     return new Uint8Array([rgb.r, rgb.g, rgb.b, 255]);
 }
@@ -105,4 +100,4 @@ function has_zx_spectrum_palette(palette) {
     return true;
 }
 
-module.exports = {white, bright_white, ega, c64, zx, palettes, get_rgba, convert_ega_to_vga, convert_ega_to_style, has_zx_spectrum_palette, has_ansi_palette, has_c64_palette};
+module.exports = {white, bright_white, ega, c64, zx, get_rgba, convert_ega_to_vga, convert_ega_to_style, has_zx_spectrum_palette, has_ansi_palette, has_c64_palette};
