@@ -52,7 +52,7 @@ const zx_white = rgb(255, 255, 255);
 
 const ega = [black, blue, green, cyan, red, magenta, yellow, white, bright_black, bright_blue, bright_green, bright_cyan, bright_red, bright_magenta, bright_yellow, bright_white];
 const c64 = [c64_black, c64_white, c64_red, c64_cyan, c64_violet, c64_green, c64_blue, c64_yellow, c64_orange, c64_brown, c64_light_red, c64_dark_grey, c64_grey, c64_light_green, c64_light_blue, c64_light_grey];
-const zx = [zx_black, zx_dark_blue, zx_blue, zx_dark_red, zx_red, zx_purple, zx_magenta, zx_dark_green, zx_green, zx_dark_cyan, zx_cyan, zx_dark_yellow, zx_yellow, zx_beige, zx_white, zx_white];
+const zx = [zx_black, zx_dark_blue, zx_dark_green, zx_dark_cyan, zx_dark_red, zx_purple, zx_dark_yellow, zx_beige, zx_black, zx_blue, zx_green, zx_cyan, zx_red, zx_magenta, zx_yellow, zx_white]
 
 function get_rgba(rgb) {
     return new Uint8Array([rgb.r, rgb.g, rgb.b, 255]);
