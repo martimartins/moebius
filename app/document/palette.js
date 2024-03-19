@@ -68,8 +68,12 @@ class PaletteChooser extends events.EventEmitter {
             this.emit("set_bg", this.bg_value);
             doc.c64_background = this.bg_value;
         }
+        if (doc.is_zx_palette) {
+            this.toggle_zx_spectrum_palette();
+        } else {
+            send("check_default_palette");
+        }
         this.update_swatches();
-        send("check_default_palette");
     }
 
     previous_foreground_color() {

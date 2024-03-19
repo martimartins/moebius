@@ -1,3 +1,5 @@
+const palette = require("../libtextmode/palette");
+
 function $(name) {
     return document.getElementById(name);
 }
@@ -11,7 +13,7 @@ function bytes_to_blocks({columns, rows, bytes}) {
 }
 
 class Sauce {
-    constructor({columns, rows, title = "", author = "", group = "", date, filesize = 0, ice_colors = false, use_9px_font = false, font_name = "IBM VGA", comments = ""} = {}) {
+    constructor({columns, rows, title = "", author = "", group = "", date, filesize = 0, ice_colors = false, use_9px_font = false, font_name = "IBM VGA", comments = "", is_zx_palette = false} = {}) {
         this.columns = columns;
         this.rows = rows;
         this.title = title;
@@ -21,6 +23,7 @@ class Sauce {
         this.filesize = filesize;
         this.ice_colors = ice_colors;
         this.use_9px_font = use_9px_font;
+        this.is_zx_palette = is_zx_palette;
         this.font_name = font_name;
         this.comments = comments;
     }
@@ -120,6 +123,7 @@ function add_sauce_bytes({doc, data_type, file_type, bytes: file_bytes}) {
     }
     bytes[104] = comments_length(doc.comments);
     if (data_type != data_type_types.XBIN) {
+        bytes[105] = 0;
         if (doc.ice_colors) {
             bytes[105] = 1;
         }
@@ -127,6 +131,9 @@ function add_sauce_bytes({doc, data_type, file_type, bytes: file_bytes}) {
             bytes[105] += 1 << 2;
         } else {
             bytes[105] += 1 << 1;
+        }
+        if (palette.has_zx_spectrum_palette(doc.palette)) {
+            bytes[105] += 1 << 3;
         }
         bytes[105] += 1 << 4;
         if (doc.font_name) add_text(bytes, 106, doc.font_name, doc.font_name.length);
@@ -184,13 +191,14 @@ function get_sauce(bytes) {
             const flags = sauce_bytes[105];
             const ice_colors = (flags & 0x01) == 1;
             const use_9px_font = (flags >> 1 & 0x02) == 2;
+            const is_zx_palette = (flags & 0x08) == 8;
             let font_name = bytes_to_utf8(sauce_bytes, 106, 22).replace(/\0/g, "");
             if (font_name == "") font_name = "IBM VGA";
             if (filesize == 0) {
                 filesize = bytes.length = 128;
                 if (number_of_comments) filesize -= number_of_comments * 64 + 5;
             }
-            return new Sauce({columns, rows, title, author, group, date, filesize, ice_colors, use_9px_font, font_name, comments});
+            return new Sauce({columns, rows, title, author, group, date, filesize, ice_colors, use_9px_font, is_zx_palette, font_name, comments});
         }
     }
     const sauce = new Sauce();
@@ -210,6 +218,7 @@ class Textmode {
         this.filesize = sauce.filesize;
         this.ice_colors = sauce.ice_colors;
         this.use_9px_font = sauce.use_9px_font;
+        this.is_zx_palette = sauce.is_zx_palette;
         this.font_name = sauce.font_name;
         this.comments = sauce.comments;
         this.bytes = bytes.subarray(0, this.filesize);

@@ -191,6 +191,7 @@ on("toggle_petscii_guide", (event, visible) => toggle_petscii_guide(visible));
 on("toggle_drawinggrid", (event, visible, columns, rows) => toggle_drawinggrid(visible, columns, rows));
 on("toggle_custom_drawinggrid", (event, visible, columns, rows) => toggle_custom_drawinggrid(visible, columns, rows));
 
+doc.on("rescale_drawinggrid", (columns, rows) => rescale_drawinggrid(columns, rows));
 doc.on("render", () => rescale_guide());
 
 class StatusBar {

@@ -725,6 +725,7 @@ class TextModeDoc extends events.EventEmitter {
     get font_name() {return doc.font_name;}
     get ice_colors() {return doc.ice_colors;}
     get use_9px_font() {return doc.use_9px_font;}
+    get is_zx_palette() {return doc.is_zx_palette;}
     get data() {return doc.data;}
     get c64_background() {return doc.c64_background;}
     set c64_background(value) {doc.c64_background = value;}
@@ -905,8 +906,14 @@ class TextModeDoc extends events.EventEmitter {
             this.undo_history.reset_undos();
         }
         libtextmode.resize_canvas(doc, columns, rows);
-        document.getElementById("drawing_grid").classList.add("hidden");
-        send("uncheck_all_guides");
+        const drawing_grid = document.getElementById("drawing_grid");
+        if (!drawing_grid?.classList.contains("hidden")) {
+            const first_column = document.querySelector("#drawing_grid .column");
+            const first_row = document.querySelector("#drawing_grid .row");
+            const grid_columns = parseInt(first_column.style.width) / this.render.font.width;
+            const grid_rows = parseInt(first_row.style.height) / this.render.font.height;
+            this.emit("rescale_drawinggrid", grid_columns, grid_rows);
+        }
         this.start_rendering();
         if (connection) connection.set_canvas_size(columns, rows);
     }
