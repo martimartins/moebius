@@ -106,29 +106,29 @@ class PaletteChooser extends events.EventEmitter {
         else return;
 
         for (let i = 0; i < doc.palette.length; i++) {
-            doc.update_palette(i, doc.palette[i]);
+            doc.font.replace_cache_at(i, doc.palette[i])
         }
+        doc.rerender();
         this.update_swatches();
     }
 
     toggle_default_palette() {
         send("uncheck_all_palettes");
+        doc.is_zx_palette = false;
         this.set_color_palette("default");
         send("check_default_palette");
     }
 
     toggle_zx_spectrum_palette() {
         send("uncheck_all_palettes");
+        doc.is_zx_palette = true;
         this.set_color_palette("zx");
         send("check_zx_spectrum_palette");
 
-        // Rerender ZX Spectrum colors
-        // For ZX Spectrum Restriction 
+        // ZX Spectrum Restriction 
         for (let y = 0; y <= doc.rows - 1; y++) {
             for (let x = 0; x <= doc.columns - 1; x++) {
-                const prev_block = doc.data[doc.columns * y + (x - 1)];
-                const block = doc.data[doc.columns * y + x];
-                if ((x-1) % 2 == 0) doc.visual_change_at(1-x, y, prev_block.code, block.fg, block.bg);
+                doc.apply_zx_restrictions(x, y);
             }
         }
     }

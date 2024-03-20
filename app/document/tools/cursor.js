@@ -366,14 +366,6 @@ class Cursor {
         const { x, y } = this;
         if (!keyboard.overwrite_mode) this.right();
         doc.change_data(x, y, code, palette.fg, palette.bg, {prev_x: x, prev_y: y}, this);
-        // ZX Spectrum Restriction
-        // Shows only 1 color per 2-character space
-        if (has_zx_spectrum_palette(doc.palette)) {
-            if ((x-1) % 2 == 0) {
-                const prev_block = doc.at(x-1, y);
-                doc.visual_change_at(x-1, y, prev_block.code, palette.fg, palette.bg);
-            }
-        }
         this.draw();
     }
 

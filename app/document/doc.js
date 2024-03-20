@@ -2,7 +2,7 @@ const libtextmode = require("../libtextmode/libtextmode");
 const {on, send, send_sync} = require("../senders");
 const events = require("events");
 const chat = require("./ui/chat");
-const path = require("path");;
+const path = require("path");
 let doc, render;
 const actions =  {CONNECTED: 0, REFUSED: 1, JOIN: 2, LEAVE: 3, CURSOR: 4, SELECTION: 5, RESIZE_SELECTION: 6, OPERATION: 7, HIDE_CURSOR: 8, DRAW: 9, CHAT: 10, STATUS: 11, SAUCE: 12, ICE_COLORS: 13, USE_9PX_FONT: 14, CHANGE_FONT: 15, SET_CANVAS_SIZE: 16, PASTE_AS_SELECTION: 17, ROTATE: 18, FLIP_X: 19, FLIP_Y: 20, SET_BG: 21};
 const statuses = {ACTIVE: 0, IDLE: 1, AWAY: 2, WEB: 3};
@@ -728,6 +728,7 @@ class TextModeDoc extends events.EventEmitter {
     get is_zx_palette() {return doc.is_zx_palette;}
     get data() {return doc.data;}
     get c64_background() {return doc.c64_background;}
+    set is_zx_palette(value) {doc.is_zx_palette = value;}
     set c64_background(value) {doc.c64_background = value;}
     set palette(value) {doc.palette = value;}
 
@@ -784,6 +785,15 @@ class TextModeDoc extends events.EventEmitter {
         libtextmode.render_at(render, x, y, block, doc.c64_background);
     }
 
+    apply_zx_restrictions(x, y) {
+        if ((x-1) % 2 !== 0) return;
+        const parent_block = this.data[this.columns * y + (x - 1)];
+        const block = this.data[this.columns * y + x];
+        if (parent_block.bg === block.bg && parent_block.fg === block.fg) return;
+        this.visual_change_at(x-1, y, parent_block.code, block.fg, block.bg);
+        return {...parent_block, fg: block.fg, bg: block.bg}
+    }
+
     change_data(x, y, code, fg, bg, prev_cursor, cursor, mirrored = true) {
         if (x < 0 || x >= doc.columns || y < 0 || y >= doc.rows) return;
         const i = doc.columns * y + x;
@@ -798,6 +808,21 @@ class TextModeDoc extends events.EventEmitter {
         if (this.mirror_mode && mirrored) {
             const opposing_x = Math.floor(doc.columns / 2) - (x - Math.ceil(doc.columns / 2)) - 1;
             this.change_data(opposing_x, y, libtextmode.flip_code_x(code), fg, bg, undefined, undefined, false);
+        }
+        if (this.is_zx_palette) {
+            const block = this.apply_zx_restrictions(x, y);
+            if (block) this.undo_history.push(x-1, y, block);
+        }
+    }
+
+    rerender() {
+        for (let y = 0; y <= doc.rows - 1; y++) {
+            for (let x = 0; x <= doc.columns - 1; x++) {
+                const block = doc.data[doc.columns * y + x];
+                if (block.fg_rgb) block.fg_rgb = this.palette[block.fg];
+                if (block.bg_rgb) block.bg_rgb = this.palette[block.bg];
+                libtextmode.render_at(render, x, y, block);
+            }
         }
     }
 
