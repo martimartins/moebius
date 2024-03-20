@@ -786,12 +786,14 @@ class TextModeDoc extends events.EventEmitter {
     }
 
     apply_zx_restrictions(x, y) {
-        if ((x-1) % 2 !== 0) return;
-        const parent_block = this.data[this.columns * y + (x - 1)];
         const block = this.data[this.columns * y + x];
-        if (parent_block.bg === block.bg && parent_block.fg === block.fg) return;
-        this.visual_change_at(x-1, y, parent_block.code, block.fg, block.bg);
-        return {...parent_block, fg: block.fg, bg: block.bg}
+        const is_left_pair = (x) % 2 == 0;
+        const pair_x = x + (is_left_pair ? 1: -1);
+        const pair_block = this.data[this.columns * y + pair_x];
+        if (!pair_block || !block) return;
+        if (pair_block.bg === block.bg && pair_block.fg === block.fg) return;
+        this.visual_change_at(pair_x, y, pair_block.code, block.fg, block.bg);
+        return {code: pair_block.code, fg: block.fg, bg: block.bg};
     }
 
     change_data(x, y, code, fg, bg, prev_cursor, cursor, mirrored = true) {
