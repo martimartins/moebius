@@ -792,6 +792,7 @@ class TextModeDoc extends events.EventEmitter {
         const pair_block = this.data[this.columns * y + pair_x];
         if (!pair_block || !block) return;
         if (pair_block.bg === block.bg && pair_block.fg === block.fg) return;
+        if (pair_block.code == 32 || block.code == 32) return;
         this.visual_change_at(pair_x, y, pair_block.code, block.fg, block.bg);
         return {code: pair_block.code, fg: block.fg, bg: block.bg};
     }

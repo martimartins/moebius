@@ -127,7 +127,7 @@ class PaletteChooser extends events.EventEmitter {
 
         // ZX Spectrum Restriction 
         for (let y = 0; y <= doc.rows - 1; y++) {
-            for (let x = 0; x <= doc.columns - 1; x++) {
+            for (let x = 0; x <= doc.columns - 1; x += 2) {
                 doc.apply_zx_restrictions(x, y);
             }
         }
