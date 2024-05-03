@@ -725,10 +725,10 @@ class TextModeDoc extends events.EventEmitter {
     get font_name() {return doc.font_name;}
     get ice_colors() {return doc.ice_colors;}
     get use_9px_font() {return doc.use_9px_font;}
-    get is_zx_palette() {return doc.is_zx_palette;}
+    get has_zx_restriction() {return doc.has_zx_restriction;}
     get data() {return doc.data;}
     get c64_background() {return doc.c64_background;}
-    set is_zx_palette(value) {doc.is_zx_palette = value;}
+    set has_zx_restriction(value) {doc.has_zx_restriction = value;}
     set c64_background(value) {doc.c64_background = value;}
     set palette(value) {doc.palette = value;}
 
@@ -812,7 +812,7 @@ class TextModeDoc extends events.EventEmitter {
             const opposing_x = Math.floor(doc.columns / 2) - (x - Math.ceil(doc.columns / 2)) - 1;
             this.change_data(opposing_x, y, libtextmode.flip_code_x(code), fg, bg, undefined, undefined, false);
         }
-        if (this.is_zx_palette) {
+        if (this.has_zx_restriction) {
             const block = this.apply_zx_restrictions(x, y);
             if (block) this.undo_history.push(x-1, y, block);
         }

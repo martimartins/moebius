@@ -303,6 +303,8 @@ function colors_menu_template(win) {
                 {label: "ZX Spectrum", id: "zx_spectrum_palette", click(item) {win.send("toggle_zx_spectrum_palette");}, type: "checkbox", checked: false},
             ]},
             {type: "separator"},
+            {label: "ZX Restrictions", id: "zx_restrictions", click(item) {win.send("toggle_zx_restrictions", item.checked);}, type: "checkbox", checked: false},
+            {type: "separator"},
             {label: "Use iCE Colors", id: "ice_colors", accelerator: "CmdorCtrl+E", click(item) {win.send("ice_colors", item.checked);}, type: "checkbox", checked: false},
             {type: "separator"},
             {label: "Remove iCE Colors as New Document", id: "remove_ice_colors", click(item) {win.send("remove_ice_colors");}},
@@ -615,6 +617,7 @@ electron.ipcMain.on("update_menu_checkboxes", (event, {id, insert_mode, overwrit
 electron.ipcMain.on("uncheck_transparent", (event, {id}) => uncheck(id, "transparent"));
 electron.ipcMain.on("uncheck_underneath", (event, {id}) => uncheck(id, "underneath"));
 electron.ipcMain.on("uncheck_drawinggrid_custom", (event, {id}) => uncheck(id, "drawinggrid_custom"));
+electron.ipcMain.on("uncheck_zx_restrictions", (event, {id}) => uncheck(id, "zx_restrictions"));
 electron.ipcMain.on("check_underneath", (event, {id}) => check(id, "underneath"));
 electron.ipcMain.on("uncheck_over", (event, {id}) => uncheck(id, "over"));
 electron.ipcMain.on("check_over", (event, {id}) => check(id, "over"));
@@ -626,6 +629,7 @@ electron.ipcMain.on("uncheck_all_palettes", (event, {id}) => {
     uncheck(id, "zx_spectrum_palette");
 });
 
+electron.ipcMain.on("check_zx_restrictions", (event, {id}) => check(id, "zx_restrictions"));
 electron.ipcMain.on("check_smallscale_guide", (event, {id}) => check(id, "smallscale_guide"));
 electron.ipcMain.on("check_square_guide", (event, {id}) => check(id, "square_guide"));
 electron.ipcMain.on("check_instagram_guide", (event, {id}) => check(id, "instagram_guide"));

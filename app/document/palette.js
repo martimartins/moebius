@@ -68,7 +68,7 @@ class PaletteChooser extends events.EventEmitter {
             this.emit("set_bg", this.bg_value);
             doc.c64_background = this.bg_value;
         }
-        if (doc.is_zx_palette) {
+        if (doc.has_zx_restriction) {
             this.toggle_zx_spectrum_palette();
         } else {
             send("check_default_palette");
@@ -114,16 +114,27 @@ class PaletteChooser extends events.EventEmitter {
 
     toggle_default_palette() {
         send("uncheck_all_palettes");
-        doc.is_zx_palette = false;
+        // doc.has_zx_restriction = false;
         this.set_color_palette("default");
         send("check_default_palette");
     }
 
     toggle_zx_spectrum_palette() {
         send("uncheck_all_palettes");
-        doc.is_zx_palette = true;
         this.set_color_palette("zx");
         send("check_zx_spectrum_palette");
+    }
+
+    toggle_zx_restrictions(checked) {
+        if (!checked) {
+            send("uncheck_zx_restrictions");
+            doc.has_zx_restriction = false;
+            doc.rerender();
+            return;
+        }
+        
+        send("check_zx_restrictions");
+        doc.has_zx_restriction = true;
 
         // ZX Spectrum Restriction 
         for (let y = 0; y <= doc.rows - 1; y++) {
@@ -179,6 +190,7 @@ class PaletteChooser extends events.EventEmitter {
         on("default_color", (event) => this.default_color());
         on("toggle_default_palette", (event) => this.toggle_default_palette());
         on("toggle_zx_spectrum_palette", (event) => this.toggle_zx_spectrum_palette());
+        on("toggle_zx_restrictions", (event, checked) => this.toggle_zx_restrictions(checked));
         on("switch_foreground_background", (event) => this.switch_foreground_background());
         on("set_fg", (event, new_fg) => this.fg = new_fg);
         on("set_bg", (event, new_bg) => {
